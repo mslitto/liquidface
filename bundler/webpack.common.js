@@ -14,7 +14,7 @@ export default {
   devtool: 'source-map',
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [ { from: path.join(cwd, 'static') } ],
+      patterns: [{ from: path.join(cwd, 'static') }],
     }),
     new HtmlWebpackPlugin({
       template: path.join(cwd, 'src', 'index.html'),

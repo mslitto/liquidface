@@ -9,10 +9,10 @@ export default merge(commonConfiguration, {
   devServer: {
     host: 'localhost',
     port: portFinderSync.getPort(8080),
-    watchFiles: [ './src/**/*', './static/**/*' ],
+    watchFiles: ['./src/**/*', './static/**/*'],
     open: true,
     https: false,
-    onListening: (props) => {
+    onListening: props => {
       const port = props.options.port
       const https = props.options.https ? 's' : ''
       const domain = `http${https}://localhost:${port}`
