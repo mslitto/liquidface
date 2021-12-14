@@ -1,11 +1,10 @@
 export const DisplacementShader = {
+  uniforms: {
+    texture1: { type: 't', value: null },
+    scale: { type: 'f', value: 1.0 },
+  },
 
-    uniforms: {
-        texture1: { type: "t", value: null },
-        scale: { type: "f", value: 1.0 },
-    },
-
-    vertexShader: `
+  vertexShader: `
 varying vec2 vUv;
 varying float noise;
 varying vec3 fNormal;
@@ -60,7 +59,7 @@ void main() {
 }
 `,
 
-    fragmentShader: `
+  fragmentShader: `
 varying vec2 vUv;
 varying float noise;
 varying vec3 fNormal;
@@ -82,5 +81,4 @@ void main( void ) {
     //gl_FragColor = textureColor *= vRandom;
 }
 `,
-
-};
+}
