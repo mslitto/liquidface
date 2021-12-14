@@ -1,5 +1,7 @@
 {
-  "repository": "#",
+  "name": "liquidface",
+  "version": "0.0.1",
+  "author": "litto",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
