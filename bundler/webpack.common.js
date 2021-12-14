@@ -1,21 +1,23 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCSSExtractPlugin from 'mini-css-extract-plugin'
+import path from 'path'
 
-module.exports = {
-  entry: path.resolve(__dirname, '../src/script.js'),
+const cwd = process.cwd()
+
+export default {
+  entry: path.join(cwd, 'src', 'script.js'),
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.join(cwd, 'dist'),
   },
   devtool: 'source-map',
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: path.resolve(__dirname, '../static') }],
+      patterns: [ { from: path.join(cwd, 'static') } ],
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/index.html'),
+      template: path.join(cwd, 'src', 'index.html'),
       minify: true,
     }),
     new MiniCSSExtractPlugin(),
