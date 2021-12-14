@@ -9,7 +9,7 @@ export default {
   entry: path.join(cwd, 'src', 'script.js'),
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.join(cwd, 'dist'),
+    path: path.join(cwd, 'public'),
   },
   devtool: 'source-map',
   plugins: [
