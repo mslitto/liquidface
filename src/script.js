@@ -1,14 +1,13 @@
-import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-// import * as dat from 'dat.gui'
-// import testVertexS from './shaders/vertex.glsl'
-// import testFragmentS from './shaders/fragment.glsl'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-// import { DisplacementShader } from './shaders/displacement.js'
+
+// import * as dat from 'dat.gui'
+
 import displacementFrag from './shaders/displacement.fragment.glsl'
 import displacementVert from './shaders/displacement.vertex.glsl'
-import { ShaderMaterial, Vector3 } from 'three'
+
+import './style.css'
 
 const promisifiedLoader = (loader, file) => {
   return new Promise((resolve, reject) => {
@@ -20,18 +19,23 @@ const main = async () => {
   /* load all assets first */
   const textureLoader = new THREE.TextureLoader()
   const gltfLoader = new GLTFLoader()
+  const audioLoader = new THREE.AudioLoader()
 
   //Skybox
   const [
     skyboxTexture,
     colorTexture,
     gltf,
+    audioFile,
+    slimeAudio,
     // to load more files, add their names here
     // anotherGltf,
   ] = await Promise.all([
     promisifiedLoader(textureLoader, 'textures/skybox.jpg'),
     promisifiedLoader(textureLoader, 'textures/color.jpg'),
     promisifiedLoader(gltfLoader, 'models/face_07.glb'),
+    promisifiedLoader(audioLoader, './audio/story_robot.mp3'),
+    promisifiedLoader(audioLoader, './audio/slime.mp3'),
     // to load more files, just add their loader here
     // promisifiedLoader(gltfLoader, 'models/another_gltf.glb),
   ])
@@ -70,33 +74,33 @@ const main = async () => {
   /**
    * Lights
    */
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
-  scene.add(ambientLight)
+  // const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+  // scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight(0xf0ffc0, 0.4)
-  //scene.add(directionalLight)
-  directionalLight.position.set(1, 3, 0)
+  // const directionalLight = new THREE.DirectionalLight(0xf0ffc0, 0.4)
+  // //scene.add(directionalLight)
+  // directionalLight.position.set(1, 3, 0)
 
-  const hemisphereLight = new THREE.HemisphereLight(0x0000ff, 0x00ffff, 1)
-  scene.add(hemisphereLight)
+  // const hemisphereLight = new THREE.HemisphereLight(0x0000ff, 0x00ffff, 1)
+  // scene.add(hemisphereLight)
 
-  const pointLight = new THREE.PointLight(0xff9000, 0.5, 3)
-  pointLight.position.set(1, 0.5, 0)
-  // pointLight.position.y = 3
-  // pointLight.position.z = 4
-  scene.add(pointLight)
+  // const pointLight = new THREE.PointLight(0xff9000, 0.5, 3)
+  // pointLight.position.set(1, 0.5, 0)
+  // // pointLight.position.y = 3
+  // // pointLight.position.z = 4
+  // scene.add(pointLight)
 
-  const rectAreaLight = new THREE.RectAreaLight(0x4eff00, 2, 1, 1)
-  rectAreaLight.position.set(-1.5, 0, 1.5)
-  rectAreaLight.lookAt(new THREE.Vector3())
-  scene.add(rectAreaLight)
+  // const rectAreaLight = new THREE.RectAreaLight(0x4eff00, 2, 1, 1)
+  // rectAreaLight.position.set(-1.5, 0, 1.5)
+  // rectAreaLight.lookAt(new THREE.Vector3())
+  // scene.add(rectAreaLight)
 
-  const spotLight = new THREE.SpotLight(0x4e00ff, 3, 10, Math.PI * 0.1, 0.25, 0.5)
-  spotLight.position.set(0, 2, 3)
-  scene.add(spotLight)
+  // const spotLight = new THREE.SpotLight(0x4e00ff, 3, 10, Math.PI * 0.1, 0.25, 0.5)
+  // spotLight.position.set(0, 2, 3)
+  // scene.add(spotLight)
 
-  spotLight.target.position.x = 1.7
-  scene.add(spotLight.target)
+  // spotLight.target.position.x = 1.7
+  // scene.add(spotLight.target)
 
   // gui.add(ambientLight, 'intensity').name('ambient').min(0).max(1).step(0.01)
   // gui.add(directionalLight, 'intensity').name('direct').min(0).max(1).step(0.01)
@@ -129,7 +133,7 @@ const main = async () => {
 
   gltf.scene.scale.set(1, 1, 1)
   gltf.scene.position.y = 0
-  //scene.add(gltf.scene)
+
   const geometry = gltf.scene.getObjectByName('head').geometry
 
   // random
@@ -139,6 +143,7 @@ const main = async () => {
   for (let i = 0; i < count; i++) {
     randoms[i] = Math.random()
   }
+
   geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1))
 
   // Material
@@ -158,7 +163,7 @@ const main = async () => {
 
   // })
 
-  const material = new ShaderMaterial({
+  const material = new THREE.ShaderMaterial({
     fragmentShader: displacementFrag,
     vertexShader: displacementVert,
     uniforms: {
@@ -204,10 +209,39 @@ const main = async () => {
 
   scene.add(camera)
 
+  const audioListener = new THREE.AudioListener()
+  // add the listener to the camera
+  camera.add(audioListener)
+
+  // instantiate audio object
+  const ambientSound = new THREE.Audio(audioListener)
+  ambientSound.setBuffer(audioFile)
+  ambientSound.setLoop(true)
+
+  // add the audio object to the scene
+  scene.add(ambientSound)
+
+  const slimeSound = new THREE.Audio(audioListener)
+  slimeSound.setBuffer(slimeAudio)
+  slimeSound.setLoop(true)
+  slimeSound.setVolume(0.1)
+
+  window.addEventListener('click', () => {
+    if (!ambientSound.isPlaying) {
+      ambientSound.play()
+    }
+    if (!slimeSound.isPlaying) {
+      slimeSound.play()
+    }
+  })
+
   // Controls
   const controls = new OrbitControls(camera, canvas)
   controls.enableDamping = true
-  controls.target = new Vector3(0, 1.5, 0)
+  controls.target = new THREE.Vector3(0, 1.5, 0)
+  controls.maxDistance = 7
+  controls.minDistance = 2.5
+  controls.maxPolarAngle = Math.PI / 1.8
 
   /**
    * Animate
@@ -218,7 +252,7 @@ const main = async () => {
   let frequency = 0
   let freqDir = 1
   let timeAdd = 0
-  const frequencyVec = new Vector3(1, 1, 1)
+  const frequencyVec = new THREE.Vector3(1, 1, 1)
 
   const framesBeforeAnimationStarts = 100
 
@@ -232,10 +266,10 @@ const main = async () => {
   const tick = () => {
     //Animation Shader - Frequency sin cos and normals
 
-    if (currentIteration < framesBeforeAnimationStarts) {
-      // wait frameBeforeAnimationStarts frames
-      currentIteration += 1
-    } else {
+    // if (currentIteration < framesBeforeAnimationStarts) {
+    //   // wait frameBeforeAnimationStarts frames
+    //   currentIteration += 1
+    // } else {
       // wait is over, start animating
 
       // lerp frequency between maxFrequency and minFrequency
@@ -254,8 +288,9 @@ const main = async () => {
         timeAdd = 1
       }
 
-      material.uniforms.uTime.value += clock.getDelta() * (timeAdd * Math.random() * 0.5 + 0.5)
-    }
+    material.uniforms.uTime.value += clock.getDelta() * (timeAdd * Math.random() * 0.5 + 0.5)
+    // }
+
     // Update controls
     controls.update()
 
