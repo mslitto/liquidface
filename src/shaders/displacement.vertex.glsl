@@ -32,14 +32,14 @@ void main() {
 
     float elevation = sin(normal.x * uFrequency.x + uTime);
     elevation += noise * sin(normal.y * uFrequency.y  + uTime);
-    elevation += noise* sin(normal.z * uFrequency.z + uTime);
+    elevation += noise * sin(normal.z * uFrequency.z + uTime);
     elevation *= 0.1;
 
     modelPosition.x += normal.x * elevation;
     modelPosition.y += normal.y * elevation;
     modelPosition.z += normal.z * elevation;
 
-    //modelPosition.z = aRandom * 0.1;
+    // modelPosition.z = aRandom * 0.1;
     vec4 viewPosition = viewMatrix * modelPosition * noise;
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
