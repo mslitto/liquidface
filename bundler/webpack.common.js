@@ -75,6 +75,15 @@ export default {
         exclude: /node_modules/,
         use: ['raw-loader'],
       },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader',
+        options: {
+          name: 'audio/[name].[ext]',
+          outputPath: 'audio/',
+          publicPath: 'audio/',
+        },
+      },
     ],
   },
 }
